@@ -332,6 +332,33 @@
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
         }
 
+        .photo-type-switch {
+            display: inline-flex;
+            padding: 4px;
+            background: rgba(212, 175, 55, 0.12);
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.18);
+        }
+
+        .photo-type-option {
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--text-light);
+            border: none;
+            border-radius: 999px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-type-option.active {
+            background: linear-gradient(135deg, var(--rose-gold), var(--gold));
+            color: white;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+        }
+
         .video-buttons {
             display: flex;
             gap: 10px;
@@ -878,6 +905,14 @@
                 width: 100%;
             }
 
+            .photo-type-switch {
+                width: 100%;
+            }
+
+            .photo-type-option {
+                flex: 1;
+            }
+
             .gallery {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 12px;
@@ -987,7 +1022,10 @@
                     <span class="icon">💝</span>
                     <span>点击放大查看</span>
                 </div>
-                <button class="video-switch-btn" id="switchPhotosBtn">查看婚纱照片</button>
+                <div class="photo-type-switch" id="photoTypeSwitch">
+                    <button class="photo-type-option active" id="weddingPhotosBtn" type="button">婚礼</button>
+                    <button class="photo-type-option" id="dressPhotosBtn" type="button">婚纱</button>
+                </div>
             </div>
 
             <div class="gallery" id="gallery">
@@ -1202,11 +1240,23 @@
 
         switchVideoBtn.addEventListener('click', switchVideo);
 
-        const switchPhotosBtn = document.getElementById('switchPhotosBtn');
+        const weddingPhotosBtn = document.getElementById('weddingPhotosBtn');
+        const dressPhotosBtn = document.getElementById('dressPhotosBtn');
 
-        function switchPhotos() {
-            currentPhotosDir = currentPhotosDir === 'photos' ? 'photos2' : 'photos';
-            switchPhotosBtn.textContent = currentPhotosDir === 'photos' ? '查看婚纱照片' : '查看婚礼照片';
+        function updatePhotoSwitch() {
+            const isWedding = currentPhotosDir === 'photos';
+            weddingPhotosBtn.classList.toggle('active', isWedding);
+            dressPhotosBtn.classList.toggle('active', !isWedding);
+            photoCount.textContent = isWedding ? '婚礼照片' : '婚纱照片';
+        }
+
+        function switchPhotos(targetDir) {
+            const nextDir = targetDir || (currentPhotosDir === 'photos' ? 'photos2' : 'photos');
+            if (nextDir === currentPhotosDir) {
+                return;
+            }
+            currentPhotosDir = nextDir;
+            updatePhotoSwitch();
             photoList = generatePhotoList();
             gallery.innerHTML = '';
             loadedPhotos = 0;
@@ -1215,7 +1265,8 @@
             loadMorePhotos();
         }
 
-        switchPhotosBtn.addEventListener('click', switchPhotos);
+        weddingPhotosBtn.addEventListener('click', () => switchPhotos('photos'));
+        dressPhotosBtn.addEventListener('click', () => switchPhotos('photos2'));
 
         function generatePhotoList() {
             const list = [];
@@ -1249,7 +1300,7 @@
         const lightboxNext = document.getElementById('lightboxNext');
         const scrollTopBtn = document.getElementById('scrollTop');
 
-        photoCount.textContent = `照片`;
+        updatePhotoSwitch();
 
         function createPhotoItem(photo, index) {
             const item = document.createElement('div');
