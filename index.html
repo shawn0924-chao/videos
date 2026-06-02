@@ -1100,7 +1100,10 @@
             photos2: 'https://myvideos.tos-cn-beijing.volces.com/photos2/'
         };
         let currentPhotosDir = 'photos';
-        const TOTAL_PHOTOS = 50;
+        const TOTAL_PHOTOS = {
+            photos: 50,
+            photos2: 76
+        };
         const PHOTOS_PER_PAGE = 16;
         const PHOTO_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
@@ -1216,7 +1219,7 @@
 
         function generatePhotoList() {
             const list = [];
-            for (let i = 1; i <= TOTAL_PHOTOS; i++) {
+            for (let i = 1; i <= TOTAL_PHOTOS[currentPhotosDir]; i++) {
                 const num = String(i).padStart(3, '0');
                 list.push({
                     id: i,
@@ -1246,7 +1249,7 @@
         const lightboxNext = document.getElementById('lightboxNext');
         const scrollTopBtn = document.getElementById('scrollTop');
 
-        photoCount.textContent = `共 ${TOTAL_PHOTOS} 张照片`;
+        photoCount.textContent = `共 ${TOTAL_PHOTOS[currentPhotosDir]} 张照片`;
 
         function createPhotoItem(photo, index) {
             const item = document.createElement('div');
