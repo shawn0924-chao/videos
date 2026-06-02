@@ -364,25 +364,31 @@
         }
 
         .video-container video::-webkit-media-controls {
-            z-index: 2147483647;
+            background: rgba(0, 0, 0, 0.3);
         }
 
-        video:fullscreen {
-            object-fit: contain;
-            width: 100vw;
-            height: 100vh;
+        .video-container video:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            object-fit: contain !important;
         }
 
-        video:-webkit-full-screen {
-            object-fit: contain;
-            width: 100vw;
-            height: 100vh;
+        .video-container video:fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            object-fit: contain !important;
         }
 
-        @media (orientation: landscape) {
+        .video-container video:-webkit-full-screen-ancestor {
+            position: static !important;
+        }
+
+        @media screen and (orientation: portrait) {
             .video-container video:-webkit-full-screen {
-                width: 100vw;
-                height: 100vh;
+                transform: rotate(90deg);
+                transform-origin: center center;
+                width: 100vh !important;
+                height: 100vw !important;
             }
         }
 
@@ -1023,16 +1029,11 @@
                     </div>
                     <div class="video-wrapper">
                         <div class="video-container">
-                            <video id="weddingVideo" controls preload="metadata"
-                                   playsinline="true"
-                                   webkit-playsinline="true"
-                                   x5-playsinline="true"
+                            <video id="weddingVideo" controls preload="metadata" poster=""
+                                   playsinline webkit-playsinline="true"
                                    x5-video-player-type="h5"
                                    x5-video-player-fullscreen="true"
-                                   x5-video-orientation="landscape"
-                                   webkit-airplay="allow"
-                                   airplay="allow"
-                                   crossorigin="anonymous">
+                                   x5-video-orientation="landscape">
                                 <source src="https://myvideos.tos-cn-beijing.volces.com/mvvideo.mp4" type="video/mp4">
                                 您的浏览器不支持视频播放
                             </video>
@@ -1173,6 +1174,7 @@
         const switchVideoBtn = document.getElementById('switchVideoBtn');
         const weddingVideo = document.getElementById('weddingVideo');
         const videoVersion = document.getElementById('videoVersion');
+        const videoTitle = weddingVideo.parentElement.querySelector('h3');
 
         function switchVideo() {
             const wasPlaying = !weddingVideo.paused;
@@ -1181,7 +1183,7 @@
             if (currentVideo === 'mv') {
                 currentVideo = 'full';
                 switchVideoBtn.textContent = '切换婚礼MV';
-                videoVersion.textContent = 'Full Video（01:10:52）';
+                videoVersion.textContent = 'Full Video（01:10：52）';
             } else {
                 currentVideo = 'mv';
                 switchVideoBtn.textContent = '切换完整视频';
@@ -1429,176 +1431,6 @@
         scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-
-        (function initVideoLandscapePlay() {
-            const video = document.getElementById('weddingVideo');
-            if (!video) return;
-
-            const ua = navigator.userAgent.toLowerCase();
-            const isIOS = /iphone|ipad|ipod/.test(ua);
-            const isAndroid = /android/.test(ua);
-            const isHarmonyOS = /harmonyos|openharmony/.test(ua) || 
-                               (navigator.userAgent.includes('HarmonyOS'));
-            const isWeixin = /micromessenger/.test(ua);
-
-            let isInFullscreen = false;
-
-            function getPlatformInfo() {
-                if (isHarmonyOS) return 'HarmonyOS';
-                if (isIOS) return 'iOS';
-                if (isAndroid) return 'Android';
-                return 'Other';
-            }
-
-            function lockLandscape() {
-                if (screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch(() => {});
-                } else if (window.screen.lockOrientation) {
-                    window.screen.lockOrientation('landscape');
-                } else if (window.screen.mozLockOrientation) {
-                    window.screen.mozLockOrientation('landscape');
-                } else if (window.screen.msLockOrientation) {
-                    window.screen.msLockOrientation('landscape');
-                }
-            }
-
-            function unlockOrientation() {
-                if (screen.orientation && screen.orientation.unlock) {
-                    screen.orientation.unlock();
-                } else if (window.screen.unlockOrientation) {
-                    window.screen.unlockOrientation();
-                } else if (window.screen.mozUnlockOrientation) {
-                    window.screen.mozUnlockOrientation();
-                } else if (window.screen.msUnlockOrientation) {
-                    window.screen.msUnlockOrientation();
-                }
-            }
-
-            function enterFullscreen() {
-                if (isInFullscreen) return;
-
-                if (isIOS) {
-                    if (video.webkitEnterFullscreen) {
-                        video.webkitEnterFullscreen();
-                    }
-                } else if (isHarmonyOS) {
-                    if (video.requestFullscreen) {
-                        video.requestFullscreen().catch(() => {
-                            if (video.webkitRequestFullscreen) {
-                                video.webkitRequestFullscreen();
-                            }
-                        });
-                    } else if (video.webkitRequestFullscreen) {
-                        video.webkitRequestFullscreen();
-                    }
-                    lockLandscape();
-                } else if (isAndroid) {
-                    if (video.requestFullscreen) {
-                        video.requestFullscreen().catch(() => {
-                            if (video.webkitRequestFullscreen) {
-                                video.webkitRequestFullscreen();
-                            }
-                        });
-                    } else if (video.webkitRequestFullscreen) {
-                        video.webkitRequestFullscreen();
-                    }
-                    lockLandscape();
-                } else {
-                    if (video.requestFullscreen) {
-                        video.requestFullscreen().catch(() => {});
-                    }
-                }
-            }
-
-            function exitFullscreen() {
-                if (!isInFullscreen) return;
-
-                if (isIOS) {
-                    if (video.webkitExitFullscreen) {
-                        video.webkitExitFullscreen();
-                    }
-                } else if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(() => {});
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
-
-                unlockOrientation();
-            }
-
-            function handlePlay() {
-                setTimeout(() => {
-                    enterFullscreen();
-                }, 100);
-            }
-
-            function handlePause() {
-                if (video.ended) return;
-            }
-
-            function handleEnded() {
-                exitFullscreen();
-            }
-
-            function handleFullscreenChange() {
-                isInFullscreen = !!(document.fullscreenElement || 
-                                   document.webkitFullscreenElement ||
-                                   video.webkitDisplayingFullscreen);
-                
-                if (isInFullscreen) {
-                    lockLandscape();
-                } else {
-                    unlockOrientation();
-                }
-            }
-
-            function handleX5Fullscreen(e) {
-                isInFullscreen = (e.type === 'x5videoenterfullscreen');
-                if (isInFullscreen) {
-                    lockLandscape();
-                } else {
-                    unlockOrientation();
-                }
-            }
-
-            video.addEventListener('play', handlePlay);
-            video.addEventListener('ended', handleEnded);
-
-            video.addEventListener('webkitbeginfullscreen', () => {
-                isInFullscreen = true;
-            });
-            video.addEventListener('webkitendfullscreen', () => {
-                isInFullscreen = false;
-                unlockOrientation();
-            });
-
-            document.addEventListener('fullscreenchange', handleFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-
-            video.addEventListener('x5videoenterfullscreen', handleX5Fullscreen);
-            video.addEventListener('x5videoexitfullscreen', handleX5Fullscreen);
-
-            window.addEventListener('orientationchange', () => {
-                if (isInFullscreen && window.orientation !== 90 && window.orientation !== -90) {
-                    if (!isIOS) {
-                        lockLandscape();
-                    }
-                }
-            });
-
-            if (isWeixin && typeof WeixinJSBridge !== 'undefined') {
-                WeixinJSBridge.invoke('getNetworkType', {}, () => {});
-            }
-
-            if (isHarmonyOS && isWeixin) {
-                video.setAttribute('x5-video-player-type', 'h5');
-                video.setAttribute('x5-video-player-fullscreen', 'true');
-                video.setAttribute('x5-video-orientation', 'landscape');
-            }
-
-            console.log('[Video Landscape] Platform:', getPlatformInfo(), 
-                       'WeChat:', isWeixin);
-        })();
 
         loadMorePhotos();
     </script>
