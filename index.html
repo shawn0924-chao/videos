@@ -363,35 +363,6 @@
             outline: none;
         }
 
-        .video-container video::-webkit-media-controls {
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .video-container video:-webkit-full-screen {
-            width: 100vw !important;
-            height: 100vh !important;
-            object-fit: contain !important;
-        }
-
-        .video-container video:fullscreen {
-            width: 100vw !important;
-            height: 100vh !important;
-            object-fit: contain !important;
-        }
-
-        .video-container video:-webkit-full-screen-ancestor {
-            position: static !important;
-        }
-
-        @media screen and (orientation: portrait) {
-            .video-container video:-webkit-full-screen {
-                transform: rotate(90deg);
-                transform-origin: center center;
-                width: 100vh !important;
-                height: 100vw !important;
-            }
-        }
-
         /* 下载弹窗样式 */
         .download-modal {
             position: fixed;
@@ -1019,18 +990,20 @@
                             <div class="video-icon">📽️</div>
                             <div class="video-info">
                                 <h3>婚礼MV</h3>
-                                <p id="videoVersion">Wedding MV</p>
+                                <p id="videoVersion">Wedding MV（09:45）</p>
                             </div>
                         </div>
                         <div class="video-buttons">
-                            <button class="video-switch-btn" id="switchVideoBtn">播放完整视频</button>
+                            <button class="video-switch-btn" id="switchVideoBtn">切换完整视频</button>
                             <button class="video-switch-btn" id="downloadBtn">下载视频</button>
                         </div>
                     </div>
                     <div class="video-wrapper">
                         <div class="video-container">
-                            <video id="weddingVideo" controls preload="metadata" poster=""
-                                   playsinline webkit-playsinline="true"
+                            <video id="weddingVideo" controls preload="metadata"
+                                   playsinline="true"
+                                   webkit-playsinline="true"
+                                   x5-playsinline="true"
                                    x5-video-player-type="h5"
                                    x5-video-player-fullscreen="true"
                                    x5-video-orientation="landscape">
@@ -1174,7 +1147,6 @@
         const switchVideoBtn = document.getElementById('switchVideoBtn');
         const weddingVideo = document.getElementById('weddingVideo');
         const videoVersion = document.getElementById('videoVersion');
-        const videoTitle = weddingVideo.parentElement.querySelector('h3');
 
         function switchVideo() {
             const wasPlaying = !weddingVideo.paused;
@@ -1182,12 +1154,12 @@
             
             if (currentVideo === 'mv') {
                 currentVideo = 'full';
-                switchVideoBtn.textContent = '播放婚礼MV';
-                videoVersion.textContent = 'Full Video';
+                switchVideoBtn.textContent = '切换婚礼MV';
+                videoVersion.textContent = 'Full Video（01:10:52）';
             } else {
                 currentVideo = 'mv';
-                switchVideoBtn.textContent = '播放完整视频';
-                videoVersion.textContent = 'Wedding MV';
+                switchVideoBtn.textContent = '切换完整视频';
+                videoVersion.textContent = 'Wedding MV（09:45）';
             }
 
             const sourceElement = weddingVideo.querySelector('source');
@@ -1206,7 +1178,7 @@
 
         function switchPhotos() {
             currentPhotosDir = currentPhotosDir === 'photos' ? 'photos2' : 'photos';
-            switchPhotosBtn.textContent = currentPhotosDir === 'photos' ? '切换相册' : '返回相册';
+            switchPhotosBtn.textContent = currentPhotosDir === 'photos' ? '查看婚纱照片' : '查看婚礼照片';
             photoList = generatePhotoList();
             gallery.innerHTML = '';
             loadedPhotos = 0;
@@ -1249,7 +1221,7 @@
         const lightboxNext = document.getElementById('lightboxNext');
         const scrollTopBtn = document.getElementById('scrollTop');
 
-        photoCount.textContent = `共 ${TOTAL_PHOTOS[currentPhotosDir]} 张照片`;
+        photoCount.textContent = `照片`;
 
         function createPhotoItem(photo, index) {
             const item = document.createElement('div');
