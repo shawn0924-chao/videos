@@ -1154,44 +1154,44 @@
         };
         const PHOTOS_PER_PAGE = 16;
         const PHOTO_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
-
+    
         // 微信浏览器检测
         function isWeChat() {
             return /MicroMessenger/i.test(navigator.userAgent);
         }
-
+    
         // 根据微信浏览器切换按钮显示
         if (isWeChat()) {
             document.getElementById('downloadBtn').style.display = 'none';
             document.getElementById('openInBrowserBtn').style.display = '';
             document.getElementById('wechatHint').style.display = '';
         }
-
+    
         // 下载链接配置
         const downloadLinks = {
             mv: "https://myvideos.tos-cn-beijing.volces.com/mvvideo.mp4",
             full: "https://myvideos.tos-cn-beijing.volces.com/fullvideo.mp4"
         };
-
+    
         // 获取下载弹窗元素
         const downloadModal = document.getElementById('downloadModal');
         const downloadBtn = document.getElementById('downloadBtn');
         const modalClose = document.getElementById('modalClose');
         const downloadMv = document.getElementById('downloadMv');
         const downloadFull = document.getElementById('downloadFull');
-
+    
         // 打开下载弹窗
         function openDownloadModal() {
             downloadModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
-
+    
         // 关闭下载弹窗
         function closeDownloadModal() {
             downloadModal.classList.remove('active');
             document.body.style.overflow = '';
         }
-
+    
         // 下载函数
         function downloadVideo(url) {
             const link = document.createElement('a');
@@ -1203,43 +1203,43 @@
             document.body.removeChild(link);
             closeDownloadModal();
         }
-
+    
         // 绑定事件
         downloadBtn.addEventListener('click', openDownloadModal);
         modalClose.addEventListener('click', closeDownloadModal);
         downloadMv.addEventListener('click', () => downloadVideo(downloadLinks.mv));
         downloadFull.addEventListener('click', () => downloadVideo(downloadLinks.full));
-
+    
         // 点击弹窗外部关闭
         downloadModal.addEventListener('click', (e) => {
             if (e.target === downloadModal) {
                 closeDownloadModal();
             }
         });
-
+    
         // ESC键关闭弹窗
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && downloadModal.classList.contains('active')) {
                 closeDownloadModal();
             }
         });
-
+    
         // 视频切换功能
         const videoSources = {
             mv: "https://myvideos.tos-cn-beijing.volces.com/mvvideo.mp4",
             full: "https://myvideos.tos-cn-beijing.volces.com/fullvideo.mp4"
         };
-
+    
         let currentVideo = 'mv';
         const switchVideoBtn = document.getElementById('switchVideoBtn');
         const weddingVideo = document.getElementById('weddingVideo');
         const videoVersion = document.getElementById('videoVersion');
         const videoTitle = weddingVideo.parentElement.querySelector('h3');
-
+    
         function switchVideo() {
             const wasPlaying = !weddingVideo.paused;
             const currentTime = weddingVideo.currentTime;
-            
+    
             if (currentVideo === 'mv') {
                 currentVideo = 'full';
                 switchVideoBtn.textContent = '切换婚礼MV';
@@ -1249,29 +1249,39 @@
                 switchVideoBtn.textContent = '切换完整视频';
                 videoVersion.textContent = 'Wedding MV（09:45）';
             }
-
+    
             const sourceElement = weddingVideo.querySelector('source');
             sourceElement.src = videoSources[currentVideo];
             weddingVideo.load();
-            
+    
             if (wasPlaying) {
                 weddingVideo.currentTime = currentTime;
                 weddingVideo.play().catch(() => {});
             }
         }
-
+    
         switchVideoBtn.addEventListener('click', switchVideo);
-
+    
+        // ==============================================
+        // ✅ 修复：浏览器打开按钮 点击事件（这里是新增的）
+        // ==============================================
+        const openInBrowserBtn = document.getElementById('openInBrowserBtn');
+        openInBrowserBtn.addEventListener('click', function() {
+            // 跳转到当前页面，强制用系统浏览器打开
+            window.location.href = window.location.href;
+            // 备选方案（更强制）：window.open(window.location.href, '_system');
+        });
+    
         const weddingPhotosBtn = document.getElementById('weddingPhotosBtn');
         const dressPhotosBtn = document.getElementById('dressPhotosBtn');
-
+    
         function updatePhotoSwitch() {
             const isWedding = currentPhotosDir === 'photos';
             weddingPhotosBtn.classList.toggle('active', isWedding);
             dressPhotosBtn.classList.toggle('active', !isWedding);
             photoCount.textContent = isWedding ? '婚礼照片' : '婚纱照片';
         }
-
+    
         function switchPhotos(targetDir) {
             const nextDir = targetDir || (currentPhotosDir === 'photos' ? 'photos2' : 'photos');
             if (nextDir === currentPhotosDir) {
@@ -1286,10 +1296,10 @@
             loadMoreContainer.style.display = 'block';
             loadMorePhotos();
         }
-
+    
         weddingPhotosBtn.addEventListener('click', () => switchPhotos('photos'));
         dressPhotosBtn.addEventListener('click', () => switchPhotos('photos2'));
-
+    
         function generatePhotoList() {
             const list = [];
             for (let i = 1; i <= TOTAL_PHOTOS[currentPhotosDir]; i++) {
@@ -1303,12 +1313,12 @@
             }
             return list;
         }
-
+    
         let photoList = generatePhotoList();
-
+    
         let currentPhotoIndex = 0;
         let loadedPhotos = 0;
-
+    
         const gallery = document.getElementById('gallery');
         const loadMoreBtn = document.getElementById('loadMoreBtn');
         const loadMoreContainer = document.getElementById('loadMoreContainer');
@@ -1321,14 +1331,14 @@
         const lightboxPrev = document.getElementById('lightboxPrev');
         const lightboxNext = document.getElementById('lightboxNext');
         const scrollTopBtn = document.getElementById('scrollTop');
-
+    
         updatePhotoSwitch();
-
+    
         function createPhotoItem(photo, index) {
             const item = document.createElement('div');
             item.className = 'photo-item';
             item.dataset.index = index;
-            
+    
             item.innerHTML = `
                 <div class="photo-placeholder">
                     <span class="icon">💝</span>
@@ -1341,7 +1351,7 @@
                     </div>
                 </div>
             `;
-
+    
             const img = new Image();
             const handleImageLoad = () => {
                 item.querySelector('.photo-placeholder').style.display = 'none';
@@ -1363,7 +1373,7 @@
             img.onerror = handleImageError;
             img.alt = photo.caption;
             img.src = photo.src;
-
+    
             if (img.complete) {
                 if (img.naturalWidth > 0) {
                     handleImageLoad();
@@ -1371,41 +1381,41 @@
                     handleImageError();
                 }
             }
-
+    
             item.addEventListener('click', () => openLightbox(index));
-
+    
             return item;
         }
-
+    
         function loadMorePhotos() {
             const start = loadedPhotos;
             const end = Math.min(start + PHOTOS_PER_PAGE, photoList.length);
-            
+    
             const fragment = document.createDocumentFragment();
             for (let i = start; i < end; i++) {
                 fragment.appendChild(createPhotoItem(photoList[i], i));
             }
             gallery.appendChild(fragment);
-            
+    
             loadedPhotos = end;
-            
+    
             if (loadedPhotos >= photoList.length) {
                 loadMoreContainer.style.display = 'none';
             }
         }
-
+    
         function openLightbox(index) {
             currentPhotoIndex = index;
             updateLightbox();
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
-
+    
         function closeLightbox() {
             lightbox.classList.remove('active');
             document.body.style.overflow = '';
         }
-
+    
         function updateLightbox() {
             const photo = photoList[currentPhotoIndex];
             lightboxImage.src = photo.src;
@@ -1413,31 +1423,31 @@
             lightboxCaption.textContent = photo.caption;
             lightboxCounter.textContent = `${currentPhotoIndex + 1} / ${photoList.length}`;
         }
-
+    
         function prevPhoto() {
             currentPhotoIndex = (currentPhotoIndex - 1 + photoList.length) % photoList.length;
             updateLightbox();
         }
-
+    
         function nextPhoto() {
             currentPhotoIndex = (currentPhotoIndex + 1) % photoList.length;
             updateLightbox();
         }
-
+    
         loadMoreBtn.addEventListener('click', loadMorePhotos);
         lightboxClose.addEventListener('click', closeLightbox);
         lightboxPrev.addEventListener('click', prevPhoto);
         lightboxNext.addEventListener('click', nextPhoto);
-
+    
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) {
                 closeLightbox();
             }
         });
-
+    
         document.addEventListener('keydown', (e) => {
             if (!lightbox.classList.contains('active')) return;
-            
+    
             switch (e.key) {
                 case 'Escape':
                     closeLightbox();
@@ -1450,23 +1460,23 @@
                     break;
             }
         });
-
+    
         let touchStartX = 0;
         let touchEndX = 0;
-
+    
         lightbox.addEventListener('touchstart', (e) => {
             touchStartX = e.changedTouches[0].screenX;
         });
-
+    
         lightbox.addEventListener('touchend', (e) => {
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
         });
-
+    
         function handleSwipe() {
             const swipeThreshold = 50;
             const diff = touchStartX - touchEndX;
-            
+    
             if (Math.abs(diff) > swipeThreshold) {
                 if (diff > 0) {
                     nextPhoto();
@@ -1475,12 +1485,12 @@
                 }
             }
         }
-
+    
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
-
+    
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1488,11 +1498,11 @@
                 }
             });
         }, observerOptions);
-
+    
         document.querySelectorAll('.video-section, .photo-section').forEach(section => {
             observer.observe(section);
         });
-
+    
         window.addEventListener('scroll', () => {
             if (window.scrollY > 500) {
                 scrollTopBtn.classList.add('visible');
@@ -1500,11 +1510,11 @@
                 scrollTopBtn.classList.remove('visible');
             }
         });
-
+    
         scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-
+    
         loadMorePhotos();
     </script>
 </body>
