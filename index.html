@@ -363,6 +363,14 @@
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .wechat-hint {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-align: center;
         }
 
         .video-wrapper {
@@ -1063,7 +1071,9 @@
                         <div class="video-buttons">
                             <button class="video-switch-btn" id="switchVideoBtn">切换完整视频</button>
                             <button class="video-switch-btn" id="downloadBtn">下载视频</button>
+                            <button class="video-switch-btn" id="openInBrowserBtn" style="display:none;">浏览器打开</button>
                         </div>
+                        <p class="wechat-hint" id="wechatHint" style="display:none;">选择浏览器打开后可以横屏播放、下载视频</p>
                     </div>
                     <div class="video-wrapper">
                         <div class="video-container">
@@ -1144,6 +1154,18 @@
         };
         const PHOTOS_PER_PAGE = 16;
         const PHOTO_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
+
+        // 微信浏览器检测
+        function isWeChat() {
+            return /MicroMessenger/i.test(navigator.userAgent);
+        }
+
+        // 根据微信浏览器切换按钮显示
+        if (isWeChat()) {
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('openInBrowserBtn').style.display = '';
+            document.getElementById('wechatHint').style.display = '';
+        }
 
         // 下载链接配置
         const downloadLinks = {
